@@ -14,18 +14,20 @@ async function Header({ isAdminPage = false }) {
   return (
     <header className='fixed top-0 w-full  bg-white/80 back z-50 border-b'>
       <nav className='mx-auto px-4 py-4 flex items-center justify-between'>
-        <Link href={isAdminPage ? "/admin" : "/"} className='flex'>
+        <Link href={isAdminPage ? "/admin" : "/"} className='flex items-center gap-2'>
           <Image
-            src={"/image.png"}
-            alt='logo'
-            height={60}
-            width={60}
-            className="h-12 w-auto object-contain"
+            src={"/icon.png"}
+            alt="AkshayRides Logo"
+            height={48}
+            width={48}
+            className="h-12 w-12 object-contain"
+            draggable={false}
           />
           {isAdminPage && (
-            <span className='text-xs font-extralight'>admin</span>
+            <span className="text-sm text-white font-light">Admin</span>
           )}
         </Link>
+
 
         <div className='flex items-center space-x-4'>
           {

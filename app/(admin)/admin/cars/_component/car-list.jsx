@@ -3,11 +3,12 @@ import { deleteCar, getCars, updateCar } from '@/actions/cars'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import useFetch from '@/hooks/use-fetch'
 import { formatCurrency } from '@/lib/helper'
-import { CarIcon, Loader, Plus, Search, Star, StarOff } from 'lucide-react'
+import { CarIcon, Eye, Loader, MoreHorizontal, Plus, Search, Star, StarOff, Trash, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -17,6 +18,10 @@ function CarList() {
 
 
     const [search, setSearch] = useState("")
+    const [carToDelete,setCarToDelete]=useState("")
+    const [deleteDialogOpen,setDeleteDialogOpen]=useState(false)
+
+
     const router = useRouter()
     const {
         loading: loadingCars,
@@ -29,7 +34,7 @@ function CarList() {
         fetchCars(search)
     }, [search])
 
-   
+
     const {
         loading: deletingCar,
         fn: deleteCarFn,
@@ -43,13 +48,12 @@ function CarList() {
         data: updateCarResult,
         error: updateCarError
     } = useFetch(updateCar)
-    useEffect(()=>{
-        if(updateCarResult?.success)
-        {
+    useEffect(() => {
+        if (updateCarResult?.success) {
             toast.success("Car Updated Successfully")
             fetchCars(search)
         }
-    },[updateCarResult,search])
+    }, [updateCarResult, search])
     console.log(carsData)
     const getStatusBadge = (status) => {
         switch (status) {
@@ -75,9 +79,24 @@ function CarList() {
                 return <Badge variant="outline">{status}</Badge>;
         }
     };
+   
+    const handleDeleteCar=async()=>{
+           if(!carToDelete) return
 
+           await deleteCarFn(carToDelete)
+        setDeleteDialogOpen(false)
+        setCarToDelete(null)
+    }
+    const handleSearch = (e) => {
+        e.preventDefault()
+        fetchCars(search)
+    }
     const handleToggleCar = async (car) => {
         await updateCarFN(car.id, { featured: !car.featured })
+    }
+
+    const handleStatusUpdate = async (car, newStatus) => {
+        await updateCarFN(car.id, { featured: newStatus })
     }
     return (
 
@@ -158,6 +177,39 @@ function CarList() {
                                                         }
 
                                                     </Button>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button
+                                                                className={"h-8 w-8 p-0"}
+                                                                variant={"ghost"}
+                                                                size={"sm"}
+                                                            >
+                                                                <MoreHorizontal />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent>
+                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                            <DropdownMenuItem
+                                                                onClick={() => router.push(`/cars/${car.id}`)}
+                                                            >
+                                                                <Eye className='h-8 w-8 mr-2' />
+                                                                View
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuLabel>Status</DropdownMenuLabel>
+                                                            <DropdownMenuItem>Set Available</DropdownMenuItem>
+                                                            <DropdownMenuItem>Set Unavailable</DropdownMenuItem>
+                                                            <DropdownMenuItem>Mark As Sold</DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className={"text-red-500 flex items-center"}>
+                                                                <Trash2 className='mr-2 h-4 w-4 text-red-500' />
+                                                                Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+
                                                 </TableCell>
                                             </TableRow>
                                         })}
