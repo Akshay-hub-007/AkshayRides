@@ -3,12 +3,13 @@ import { deleteCar, getCars, updateCar } from '@/actions/cars'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import useFetch from '@/hooks/use-fetch'
 import { formatCurrency } from '@/lib/helper'
-import { CarIcon, Eye, Loader, MoreHorizontal, Plus, Search, Star, StarOff, Trash, Trash2 } from 'lucide-react'
+import { CarIcon, Eye, Loader, Loader2, MoreHorizontal, Plus, Search, Star, StarOff, Trash, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -18,8 +19,8 @@ function CarList() {
 
 
     const [search, setSearch] = useState("")
-    const [carToDelete,setCarToDelete]=useState("")
-    const [deleteDialogOpen,setDeleteDialogOpen]=useState(false)
+    const [carToDelete, setCarToDelete] = useState("")
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
 
     const router = useRouter()
@@ -53,8 +54,24 @@ function CarList() {
             toast.success("Car Updated Successfully")
             fetchCars(search)
         }
-    }, [updateCarResult, search])
-    console.log(carsData)
+        if (deleteResult?.success) {
+            toast.success("Car deleted Successfully")
+            fetchCars(search)
+        }
+    }, [updateCarResult, deleteResult, search])
+    useEffect(() => {
+        if (carsError?.error) {
+            toast.error("Failed to load car")
+        }
+
+        if (updateCarError?.error) {
+            toast.error("Failed to update car")
+        }
+
+        if (deleteError?.error) {
+            toast.error("Failed to delete car")
+        }
+    }, [updateCarError, deleteError, carsError])
     const getStatusBadge = (status) => {
         switch (status) {
             case "AVAILABLE":
@@ -79,11 +96,11 @@ function CarList() {
                 return <Badge variant="outline">{status}</Badge>;
         }
     };
-   
-    const handleDeleteCar=async()=>{
-           if(!carToDelete) return
 
-           await deleteCarFn(carToDelete)
+    const handleDeleteCar = async () => {
+        if (!carToDelete) return
+
+        await deleteCarFn(carToDelete.id)
         setDeleteDialogOpen(false)
         setCarToDelete(null)
     }
@@ -96,7 +113,7 @@ function CarList() {
     }
 
     const handleStatusUpdate = async (car, newStatus) => {
-        await updateCarFN(car.id, { featured: newStatus })
+        await updateCarFN(car.id, { status: newStatus })
     }
     return (
 
@@ -199,11 +216,31 @@ function CarList() {
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator />
                                                             <DropdownMenuLabel>Status</DropdownMenuLabel>
-                                                            <DropdownMenuItem>Set Available</DropdownMenuItem>
-                                                            <DropdownMenuItem>Set Unavailable</DropdownMenuItem>
-                                                            <DropdownMenuItem>Mark As Sold</DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => {
+                                                                    handleStatusUpdate(car, "AVAILABLE")
+                                                                }}
+                                                                disabled={car?.status == "AVAILABLE" || updatingCars}
+                                                            >Set Available</DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => {
+                                                                    handleStatusUpdate(car, "UNAVAILABLE")
+                                                                }}
+                                                                disabled={car?.status == "UNAVAILABLE" || updatingCars}
+                                                            >Set Unavailable</DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => {
+                                                                    handleStatusUpdate(car, "SOLD")
+                                                                }}
+                                                                disabled={car?.status == "SOLD" || updatingCars}
+                                                            >Mark As Sold</DropdownMenuItem>
                                                             <DropdownMenuSeparator />
-                                                            <DropdownMenuItem className={"text-red-500 flex items-center"}>
+                                                            <DropdownMenuItem className={"text-red-500 flex items-center"}
+                                                                onClick={() => {
+                                                                    setCarToDelete(car)
+                                                                    setDeleteDialogOpen(true)
+                                                                }}
+                                                            >
                                                                 <Trash2 className='mr-2 h-4 w-4 text-red-500' />
                                                                 Delete
                                                             </DropdownMenuItem>
@@ -224,6 +261,37 @@ function CarList() {
                     }
                 </CardContent>
             </Card>
+
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Delete</DialogTitle>
+                        <DialogDescription>
+                            Are you sure want to delete {carToDelete?.make}{" "} {carToDelete?.model}
+                            {carToDelete?.year} ? This can be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteDialogOpen(false)}
+                            disabled={deletingCar}
+                        >Cancel</Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDeleteCar}
+                            disabled={deletingCar}
+                        >
+                            {deletingCar ? (
+                                <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                            ) : (
+                                "Delete Car"
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     )
 }

@@ -11,7 +11,7 @@ async function AdminLayout({children}) {
     if (!admin.authroized) {
         return notFound()
     }
-    console.log(admin.authroized,"gv")
+    // console.log(admin.authroized,"gv")
     return (
         <div className='h-full'>
             <Header isAdminPage={admin} />
