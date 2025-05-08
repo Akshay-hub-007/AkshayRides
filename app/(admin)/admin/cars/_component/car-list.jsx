@@ -129,7 +129,7 @@ function CarList() {
                         <Input
                             className="pl-9  w-full  sm:w-60 "
                             value={search}
-                            onChange={() => setSearch(e.target.value)}
+                            onChange={(e) => setSearch(e.target.value)}
                             type="search"
                             placeholder="Search Cars..."
                         />
@@ -145,7 +145,7 @@ function CarList() {
                             <div className='flex justify-center items-center py-12'>
                                 <Loader className="h-8 w-8 animate-spin text-gray-500" />
                             </div>
-                        ) : carsData?.success && carsData?.data.length > 0 ? (
+                        ) : carsData?.success && carsData?.data.length> 0 ? (
                             <div className='overflow-x-auto'>
                                 <Table>
                                     <TableHeader>
@@ -255,6 +255,17 @@ function CarList() {
 
                             </div>
                         ) : <>
+                             <div className='flex flex-col items-center justify-center py-12  px-4 text-center'>
+
+                                <CarIcon className='h-12 w-12  text-gray-300 mb-4'/>
+                                <h3 className='text-lg font-medium  text-gray-900 mb-1'>No Cars Found</h3>
+                                <p className='text-gray-500 mb-4'>
+                                    {
+                                        search?"No Car found for search criteria":"Your Inventory is empty.Add your first Car."
+                                    }
+                                </p>
+                                <Button onClick={()=>router.push("/admin/cars/create")} className={"cursor-pointer"}>Add Your first Car</Button>
+                             </div>
                         </>
 
 

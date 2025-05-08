@@ -50,7 +50,7 @@ async function Header({ isAdminPage = false }) {
                 </Link>
                 {isAdmin ? (
                   <Link
-                    href="/reservations"
+                    href="/admin"
                   >
                     <Button variant={"outline"}>
                       <Layout size={18} />
