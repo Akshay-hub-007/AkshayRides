@@ -8,14 +8,13 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { v4 as uuidv4 } from 'uuid';
 
-async function filetoBase64(file) {
+export async function filetoBase64(file) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes);
     return buffer.toString("base64")
 }
 export async function processCarImageWithAI(file) {
     try {
-        console.log(file)
         if (!process.env.GEMINI_API_KEY) {
             throw new Error("Gemini API key not configured")
         }

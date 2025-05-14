@@ -1,11 +1,14 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Camera, Upload } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import useFetch from '@/hooks/use-fetch';
+import { processImageSearch } from '@/actions/home';
+import { parseError } from '@clerk/shared/dist/error';
 
 function HomeSearch() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,6 +28,12 @@ function HomeSearch() {
        router.push(`/cars?search=${(encodeURIComponent(searchTerm))}`)
   };
 
+  const {
+    loading:isProcessing,
+    fn:processImageFn,
+    data:processResult,
+    error:processError
+  }=useFetch(processImageSearch)
   const onDrop = acceptedFiles => {
     const file = acceptedFiles[0]
 
@@ -60,14 +69,37 @@ function HomeSearch() {
     },
     maxFiles: 1
   })
-  const handleImageSearch = (e) => {
+  const handleImageSearch = async(e) => {
+
+    e.preventDefault()
     if(!searchImage)
     {
        toast.error("Please upload the image first")
        return;
     }
+
+    await processImageFn(searchImage)
    }
 
+   useEffect(()=>{
+    if(processResult.success)
+    {
+      const params=new URLSearchParams()
+      if(process.data.make) params.set("make",processResult.data.make)
+        if(processResult.data.bodyType)
+          params.set("bodyType",processResult.data.bodyType)
+        if(processResult.data.color)
+          params.set("color",processResult.data.color)
+
+        router.push(`/cars?${params.toString()}`)
+    }
+   },[processResult])
+   useEffect(()=>{
+    if(processError)
+    {
+      toast.error("Failed to analyze image :"+(processError.message ||" :Unknown Error"))
+    }
+   },[processError])
   return (
     <div className="relative">
       <form onSubmit={handleTextSubmit} className="w-full">
@@ -129,7 +161,7 @@ function HomeSearch() {
               </div>}
               </div>
            {imagePreview && (
-            <Button type="submit" className={"w-full mt-2"} disabled={isUploading}>
+            <Button type="submit" className={"w-full mt-2"} disabled={isUploading || isProcessing}>
               { isUploading?"isUploading":"Search with the Image"}
             </Button>
            )}
