@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import useFetch from '@/hooks/use-fetch';
 import { processImageSearch } from '@/actions/home';
-import { parseError } from '@clerk/shared/dist/error';
 
 function HomeSearch() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,10 +81,11 @@ function HomeSearch() {
    }
 
    useEffect(()=>{
-    if(processResult.success)
+    console.log(processResult)
+    if(processResult)
     {
       const params=new URLSearchParams()
-      if(process.data.make) params.set("make",processResult.data.make)
+      if(processResult.data.make) params.set("make",processResult.data.make)
         if(processResult.data.bodyType)
           params.set("bodyType",processResult.data.bodyType)
         if(processResult.data.color)

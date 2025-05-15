@@ -8,7 +8,8 @@ import { Badge } from './ui/badge'
 import { useRouter } from 'next/navigation'
 
 function CarCard({ car }) {
-
+  
+    console.log(car?.images[0])
     const [isSaved, setIsSaved] = useState(car.wishlisted)
      const router=useRouter()
     const handleToggleSave = async (e) => {
