@@ -1,3 +1,4 @@
+"use server"
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -11,14 +12,14 @@ export async function getCarFilters() {
             distinct: ["make"],
             orderBy: { make: "asc" }
         })
-
+        console.log(makes)
         const bodyTypes = await db.car.findMany({
-            where: { bodyType: "AVAILABLE" },
+            where: { status: "AVAILABLE" },
             select: { bodyType: true },
             distinct: ["bodyType"],
             orderBy: { bodyType: "asc" }
         })
-
+        console.log((bodyTypes) + "bodyTypes")
         const fuelTypes = await db.car.findMany({
             where: { status: "AVAILABLE" },
             select: { fuelType: true },
@@ -27,7 +28,7 @@ export async function getCarFilters() {
         })
 
         const transmissions = await db.car.findMany({
-            where: { transmission: "AVAILABLE" },
+            where: { status: "AVAILABLE" },
             select: { transmission: true },
             distinct: ["transmission"],
             orderBy: { transmission: "asc" }
@@ -43,9 +44,9 @@ export async function getCarFilters() {
             success: true,
             data: {
                 makes: makes.map((item) => item.make),
-                bodyTypes: bodyTypes.map((item) => item.bodyTypes),
-                fuelTypes: fuelTypes.map((item) => item.fuelTypes),
-                transmissions: transmissions.map((item) => item.transmissions),
+                bodyTypes: bodyTypes.map((item) => item.bodyType),
+                fuelTypes: fuelTypes.map((item) => item.fuelType),
+                transmissions: transmissions.map((item) => item.transmission),
                 priceRange: {
                     min: priceAggregations._min.price
                         ? parseFloat(priceAggregations._min.price.toString()) : 0,

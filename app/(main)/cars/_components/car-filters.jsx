@@ -122,7 +122,7 @@ const CarFilters = ({ filters }) => {
     };
 
     // ...existing code...
-    const applyFilters = (overrideSortBy) => {
+    const applyFilters = () => {
         const params = new URLSearchParams()
 
         if (make) params.set("make", make)
@@ -134,8 +134,7 @@ const CarFilters = ({ filters }) => {
         if (priceRange[1] !== filters.priceRange.max)
             params.set("maxPrice", priceRange[1].toString())
 
-        const sort = overrideSortBy !== undefined ? overrideSortBy : sortBy
-        if (sort !== "newest") params.set("sortBy", sort)
+        if (sortBy !== "newest") params.set("sortBy", sortBy)
 
         const search = searchParams.get("search")
         const page = searchParams.get("page")
@@ -204,7 +203,7 @@ const CarFilters = ({ filters }) => {
                 value={sortBy}
                 onValueChange={(value) => {
                     setSortBy(value)
-                    applyFilters(value)
+                    applyFilters
                 }}
             >
                 <SelectTrigger className="w-[180px] lg:w-full">

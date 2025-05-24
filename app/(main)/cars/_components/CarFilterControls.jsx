@@ -11,7 +11,6 @@ const CarFilterControls = ({
 }) => {
 
   const { make, bodyType, fuelType, transmission, priceRange } = currentFilters;
-  console.log(filters)
   const filterSections = [
     {
       id: "make",
@@ -45,9 +44,9 @@ const CarFilterControls = ({
       onChange: (value) => onFilterChange("transmission", value),
     },
   ];
-  console.log(filterSections)
+  
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 p-3'>
       <div className='space-y-4'>
         <h3 className='font-medium '>Price Range</h3>
         <div className='px-2'>
@@ -82,7 +81,7 @@ const CarFilterControls = ({
           </h4>
 
           <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
-            {   section.options.map((option) => {
+            {   section.options.map((option,index) => {
               console.log(option)
               return (
                 <Badge
