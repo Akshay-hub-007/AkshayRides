@@ -1,4 +1,5 @@
 "use server"
+import { serializeCarData } from "@/lib/helper";
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -81,8 +82,8 @@ export async function getCars({
         const { userId } = await auth()
         let dbUser = null
         if (userId) {
-            dbUser = await db.user.findUnique({
-                where: { clerkUserid: userId }
+            dbUser = await db.User.findUnique({
+                where: { clerkUserId: userId }
             })
         }
 
@@ -114,7 +115,7 @@ export async function getCars({
 
         let orderBy = {}
 
-        switch (sort) {
+        switch (sortBy) {
             case "priceAsc":
                 orderBy = { price: "asc" };
                 break;
@@ -123,12 +124,12 @@ export async function getCars({
                 break;
             case "newest":
             default:
-                orderBy = { createdAT: "desc" };
+                orderBy = { createdAt: "desc" };
                 break;
         }
 
 
-        const skip = (page - 2) * 6
+        const skip = (page - 1) * 6
 
         const totalCars = await db.car.count({ where })
 
@@ -150,9 +151,9 @@ export async function getCars({
 
         }
 
-        const serializedCars = cars.map((car) => {
-            serializedCars(car, wishlisted.has(car.id))
-        })
+        const serializedCars = cars.map((car) =>
+            serializeCarData(car, wishlisted.has(car.id))
+        );
 
         return {
             success: true,
