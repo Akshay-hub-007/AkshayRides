@@ -104,7 +104,7 @@ const CarListing = () => {
           of <span className='font-medium'>{pagination.total}</span> Cars
         </p>
       </div>
-      <div>
+      <div className='grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {
           cars.map((car,index)=>{
            return  <CarCard  key={index} car={car}/>

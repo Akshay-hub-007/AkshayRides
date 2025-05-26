@@ -1,22 +1,57 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
-import { CarIcon, Heart } from 'lucide-react'
+import { CarIcon, Heart, Loader } from 'lucide-react'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { useRouter } from 'next/navigation'
+import useFetch from '@/hooks/use-fetch'
+import { toggleSavedCars } from '@/actions/car-listing'
+import { useAuth } from '@clerk/nextjs'
+import { toast } from 'sonner'
 
 function CarCard({ car }) {
-  
-    console.log(car?.images[0])
-    const [isSaved, setIsSaved] = useState(car.wishlisted)
-     const router=useRouter()
-    const handleToggleSave = async (e) => {
 
+    console.log(car?.images[0])
+    const { isSignedIn } = useAuth()
+    const [isSaved, setIsSaved] = useState(car.wishlisted)
+    const router = useRouter()
+
+    const {
+        loading: isToggling,
+        fn: toggleSavedCar,
+        data: toggleResult,
+        error: toggleError
+    } = useFetch(toggleSavedCars)
+
+    useEffect(() => {
+        if (toggleResult?.success && toggleResult?.saved != isSaved) {
+            console.log("saved")
+            setIsSaved(toggleResult.saved)
+            console.log(toggleResult)
+            toast.success(toggleResult.message)
+        }
+    }, [toggleResult, isSaved])
+    const handleToggleSave = async (e) => {
+        if (!isSignedIn) {
+            toast.error("Please sign in to save car").
+
+                router.push("/sign-in")
+            return;
+        }
+        if (isToggling) return
+
+        await toggleSavedCar(car.id)
     }
+
+    useEffect(() => {
+        if (toggleError) {
+            toast.error("failed to update favorites")
+        }
+    }, [toggleError])
     return (
-        <Card className={"overflow-hidden hover:shadow-lg transition group py-0"}>  
+        <Card className={"overflow-hidden hover:shadow-lg transition group py-2"}>
             <div className='relative h-48'>
                 {car.images && car.images.length > 0 ? (
                     <div className='relative w-full h-full'>
@@ -35,7 +70,8 @@ function CarCard({ car }) {
                 )}
                 <Button variant="ghost" size="icon" className={`absolute top-2 right-2 bg-white/90 rounded-full p-1.5 ${isSaved ? "text-red-500 hover:text-red-600" : "text-gray-600 hover:text-gray-900"}`}
                     onClick={handleToggleSave} >
-                    <Heart className={isSaved ? "fill-current" : ""} />
+                    {isToggling ? (<Loader className='animate-spin' />)
+                        : (<Heart className={isSaved ? "fill-current" : ""} />)}
                 </Button>
             </div>
 
@@ -68,7 +104,7 @@ function CarCard({ car }) {
 
                 <div className='flex justify-between'>
                     <Button className={"flex-1"}
-                    onClick={()=>router.push(`/cars/${car.id}`)}
+                        onClick={() => router.push(`/cars/${car.id}`)}
                     >View Car</Button>
                 </div>
             </CardContent>
