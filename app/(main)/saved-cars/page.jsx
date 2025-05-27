@@ -9,15 +9,13 @@ export const metadata = {
 };
 
 export default async function SavedCarsPage() {
-  // Check authentication on server
   const { userId } = await auth();
   if (!userId) {
     redirect("/sign-in?redirect=/saved-cars");
   }
 
-  // Fetch saved cars on the server
   const savedCarsResult = await getSavedCars();
-
+    console.log(savedCarsResult)
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-6xl mb-6 gradient-title">Your Saved Cars</h1>
