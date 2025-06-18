@@ -1,6 +1,7 @@
 import { getCarById } from '@/actions/car-listing'
 import { notFound } from 'next/navigation'
 import React from 'react'
+import { CarDetails } from './_components/CarDetailsPage'
 
 export async function generateMetadata({params})
 {
@@ -38,7 +39,7 @@ async function CarDetailsPage({params}) {
     }
   return (
     <div className='container mx-auto px-4 py-12'>
-        Car
+        <CarDetails car={result.data} testDriveInfo={result.testDriveInfo}/>
     </div>
   )
 }
