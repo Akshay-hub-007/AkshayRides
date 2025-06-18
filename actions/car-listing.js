@@ -13,14 +13,12 @@ export async function getCarFilters() {
             distinct: ["make"],
             orderBy: { make: "asc" }
         })
-        console.log(makes)
         const bodyTypes = await db.car.findMany({
             where: { status: "AVAILABLE" },
             select: { bodyType: true },
             distinct: ["bodyType"],
             orderBy: { bodyType: "asc" }
         })
-        console.log((bodyTypes) + "bodyTypes")
         const fuelTypes = await db.car.findMany({
             where: { status: "AVAILABLE" },
             select: { fuelType: true },
@@ -177,11 +175,7 @@ export async function toggleSavedCars(carId) {
     try {
         const { userId } = await auth()
         if (!userId) throw new Error("Unauthroized")
-
-        const user = await db.user.findUnique({
-            where: { clerkUserId: userId }
-        });
-
+        let user = await db.user.findUnique({ where: { clerkUserId: userId } });
 
 
         if (!user) throw new Error("User Not Found")
@@ -276,7 +270,6 @@ export const getSavedCars = async () => {
                 savedAt: "desc"
             }
         })
-        console.log(savedCars)
         const cars = savedCars.map((saved) => serializeCarData(saved.car))
         return {
             success: true,
@@ -291,107 +284,101 @@ export const getSavedCars = async () => {
     }
 }
 
-export async function getCarById(id) {
+export async function getCarById(carId) {
     try {
-        const { userId } = await auth()
-
-        if (!userId) {
-            return {
-                success: false,
-                error: "Unauthorized"
-            }
+        // Get current user if authenticated
+        const { userId } = await auth();
+        let dbUser = null;
+        console.log(userId)
+        if (userId) {
+            dbUser = await db.user.findUnique({
+                where: { clerkUserId: userId },
+            });
         }
 
-        const user = await db.User.findUnique({
-            where: {
-                clerkUserId: userId
-            }
-        })
-        if (!user) {
+        // Get car details
+        const car = await db.car.findUnique({
+            where: { id: carId },
+        });
+        console.log(car)
+        if (!car) {
             return {
                 success: false,
-                message: "User not Found"
-            }
+                error: "Car not found",
+            };
         }
 
-        const carDetails = await db.car.findUnique({
-            where: {
-                id: id
-            }
-        })
-
-        if (!carDetails) {
-            return {
-                success: false,
-                error: "Car not Found"
-            }
-        }
-
-        let isWishlisted = false
-
-        if (user) {
+        // Get dealership info for test drive availability
+        const dealership = await db.dealerShip.findFirst({
+            include: {
+                workingHours: true,
+            },
+        });
+        console.log(dealership)
+        //     // Check if car is wishlisted by user
+        let isWishlisted = false;
+        if (dbUser) {
             const savedCar = await db.userSavedCar.findUnique({
                 where: {
                     userId_carId: {
-                        userId: user?.id,
-                        carId:id
-                    }
-                }
-            })
+                        userId: dbUser.id,
+                        carId,
+                    },
+                },
+            });
 
-            isWishlisted = !!savedCar
+            isWishlisted = !!savedCar;
         }
-        
-        const existingTestDrive = await db?.testDriveBooking?.findFirst({
+
+        console.log(carId)
+        //     // Check if user has already booked a test drive for this car
+        const existingTestDrive = await db.testDriveBooking.findFirst({
             where: {
-                carId:id,
-                userId: user?.id,
+                carId,
+                userId: dbUser?.id,
                 status: { in: ["PENDING", "CONFIRMED", "COMPLETED"] },
             },
             orderBy: {
                 createdAt: "desc",
             },
-        }) ;
+        }) || [];
+        console.log(existingTestDrive + "exits")
 
         let userTestDrive = null;
 
-        if (existingTestDrive) {
+        if (existingTestDrive.length>0) {
             userTestDrive = {
                 id: existingTestDrive.id,
                 status: existingTestDrive.status,
-                bookingDate: existingTestDrive.bookingDate.toISOString(),
+                bookingDate: existingTestDrive.bookingDate
+                    ? existingTestDrive.bookingDate.toISOString()
+                    : "",
             };
         }
 
-        const dealership = await db.dealershipInfo.findFirst({
-            include: {
-                workingHours: true,
-            },
-        });
 
-        return {
-            success: true,
-            data: {
+            return {
+              success: true,
+              data: {
                 ...serializeCarData(car, isWishlisted),
                 testDriveInfo: {
-                    userTestDrive,
-                    dealership: dealership
-                        ? {
-                            ...dealership,
-                            createdAt: dealership.createdAt.toISOString(),
-                            updatedAt: dealership.updatedAt.toISOString(),
-                            workingHours: dealership.workingHours.map((hour) => ({
-                                ...hour,
-                                createdAt: hour.createdAt.toISOString(),
-                                updatedAt: hour.updatedAt.toISOString(),
-                            })),
-                        }
-                        : null,
+                  userTestDrive,
+                  dealership: dealership
+                    ? {
+                        ...dealership,
+                        createdAt: dealership.createdAt.toISOString(),
+                        updatedAt: dealership.updatedAt.toISOString(),
+                        workingHours: dealership.workingHours.map((hour) => ({
+                          ...hour,
+                          createdAt: hour.createdAt.toISOString(),
+                          updatedAt: hour.updatedAt.toISOString(),
+                        })),
+                      }
+                    : null,
                 },
-            },
-        };
+              },
+            };
     } catch (error) {
         throw new Error("Error fetching car details:" + error.message);
     }
-
 }

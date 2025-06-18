@@ -14,7 +14,7 @@
     "@clerk/nextjs": "^6.12.9",
     "@google/generative-ai": "^0.24.0",
     "@hookform/resolvers": "^5.0.1",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^6.10.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.6",
@@ -32,7 +32,6 @@
     "lucide-react": "^0.483.0",
     "next": "15.2.3",
     "next-themes": "^0.4.6",
-    "prisma": "^6.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
@@ -48,6 +47,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.2.3",
+    "prisma": "^6.10.0",
     "tailwindcss": "^4"
   }
 }

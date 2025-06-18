@@ -16,10 +16,10 @@ export async function generateMetadata({params})
     }
 
     const car=result?.data
-
+  
     return {
         title:`${car.year} ${car.make} ${car.model} | AkshayRides`,
-        description:car?.description(0,160),
+        // description:car.description(0,160),
         openGraph:{
             images:car?.images?.[0] ?[car.images[0]]:[]
         }
@@ -28,15 +28,18 @@ export async function generateMetadata({params})
 
 async function CarDetailsPage({params}) {
 
+
      const  {id}=await params
     const result=await getCarById(id)
-   
+    console.log(result)
     if(!result.success)
     {
         notFound()
     }
   return (
-    <div>CarDetailsPage</div>
+    <div className='container mx-auto px-4 py-12'>
+        Car
+    </div>
   )
 }
 
