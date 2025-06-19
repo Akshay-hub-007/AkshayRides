@@ -2,10 +2,10 @@
 
 import aj from "@/lib/arcjet"
 import { serializeCarData } from "@/lib/helper"
-import { db } from "@/lib/prisma"
 import { request } from "@arcjet/next"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { filetoBase64 } from "./cars"
+import { db } from "@/lib/prisma"
 
 export async function getFeaturedCars(limit = 3) {
     try {
