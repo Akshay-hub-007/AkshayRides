@@ -7,15 +7,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import useFetch from "@/hooks/use-fetch"
 import { formatCurrency } from "@/lib/helper"
 import { useAuth } from "@clerk/nextjs"
-import { Car, Currency, Fuel, Gauge, Heart, MessageSquare, Share2 } from "lucide-react"
+import { Calendar, Car, Currency, Fuel, Gauge, Heart, MessageSquare, Share2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import EmiCalculator from "./Emicalculator"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-export function CarDetails({ car, testDrivingInfo }) {
-
+export function CarDetails({ car, testDriveInfo }) {
+    console.log(testDriveInfo)
     const router = useRouter()
     const { isSignedIn } = useAuth()
     const [isWishlisted, setWishlisted] = useState(car.isWishlisted)
@@ -72,7 +73,15 @@ export function CarDetails({ car, testDrivingInfo }) {
         }
     }
 
+    const handleBookTestDrive = () => {
+        if (!isSignedIn) {
+            toast.error("Please sign in to book a test drive")
+            router.push("/sign-in")
 
+            return;
+        }
+        router.push(`/test-drive/${car.id}`)
+    }
     return (
         <>
             <div>
@@ -228,11 +237,74 @@ export function CarDetails({ car, testDrivingInfo }) {
                                 </a>
                             </CardContent>
                         </Card>
+
+                        {
+                            car.status === "SOLD" || car.status === "UNAVAILABLE" && (
+                                <Alert variant="destructive">
+                                    <AlertTitle className={"captalize"}>
+                                        This car is {car?.status?.toLowerCase()}
+                                    </AlertTitle>
+                                    <AlertDescription>Please try again later.</AlertDescription>
+                                </Alert>
+                            )
+                        }
+
+                        {
+                            car.status !== "SOLD" && car.status !== "UNAVAILABLE" && (
+                                <Button
+                                    className={"w-full py-6 text-lg"}
+                                    diabled={testDriveInfo.userTestDrive}
+                                >
+                                    <Calendar className="mr-2 h-5 w-5" />
+                                    Book a test Drive
+                                    {
+                                        testDriveInfo.userTestDrive ?
+                                            `Booked for ${format(new Date(testDriveInfo.userTestDrive.bookingDate), "EEEE,MMMM d,yyyy")}` : "Book your test Drive"
+                                    }
+                                </Button>
+                            )
+                        }
                     </div>
 
 
                 </div>
-
+                <div>
+                    <div className="grid grid-cols-1 ">
+                        <div>
+                            <h3 className="text2xl font-bold mb-6">Description</h3>
+                            <p className="whitespace-pre-line text-gray-700">
+                                {car.description}
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold mb-6">Features</h3>
+                            <ul className="grid grid-cols-1 gap-2">
+                                <li className="flex items-center gap-2">
+                                    <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                                    {car.transmission} Transmission
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                                    {car.fuelType} Engine
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                                    {car.bodyType} Body Style
+                                </li>
+                                {car.seats && (
+                                    <li className="flex items-center gap-2">
+                                        <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                                        {car.seats} Seats
+                                    </li>
+                                )}
+                                <li className="flex items-center gap-2">
+                                    <span className="h-2 w-2 bg-blue-600 rounded-full"></span>
+                                    {car.color} Exterior
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     )

@@ -37,9 +37,10 @@ async function CarDetailsPage({params}) {
     {
         notFound()
     }
+    console.log(result.data.testDriveInfo)
   return (
     <div className='container mx-auto px-4 py-12'>
-        <CarDetails car={result.data} testDriveInfo={result.testDriveInfo}/>
+        <CarDetails car={result.data} testDriveInfo={result.data.testDriveInfo}/>
     </div>
   )
 }
