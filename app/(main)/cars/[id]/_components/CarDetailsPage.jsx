@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import useFetch from "@/hooks/use-fetch"
 import { formatCurrency } from "@/lib/helper"
 import { useAuth } from "@clerk/nextjs"
-import { Calendar, Car, Currency, Fuel, Gauge, Heart, MessageSquare, Share2 } from "lucide-react"
+import { Calendar, Car, Currency, Fuel, Gauge, Heart, LocateFixed, MessageSquare, Share2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -252,7 +252,8 @@ export function CarDetails({ car, testDriveInfo }) {
                         {
                             car.status !== "SOLD" && car.status !== "UNAVAILABLE" && (
                                 <Button
-                                    className={"w-full py-6 text-lg"}
+                                    className={"w-full py-6 text-lg cursor-pointer"}
+                                    onClick={handleBookTestDrive}
                                     diabled={testDriveInfo.userTestDrive}
                                 >
                                     <Calendar className="mr-2 h-5 w-5" />
@@ -352,9 +353,35 @@ export function CarDetails({ car, testDriveInfo }) {
                         </div>
                     </div>
                 </div>
-               <div>
-                
-               </div>
+
+                <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
+                    <h2 className="text-2xl font-bold mb-6"> Dealership Location</h2>
+                    <div className="bg-gray-50 rounded-lg p-6">
+                        <div className="flex-col md:flex-row gap-6 justify-between">
+                            <div className="flex items-start gap-3">
+                                <LocateFixed className="h-5 w-5 text-blue-600mt-1 flex-shrink-0" />
+                                <div>
+                                    <h4 className="font-medium">AkshayCarverse</h4>
+                                    <p className="text-gray-600">
+                                        {testDriveInfo.dealership?.address || "Not Available"}
+                                    </p>
+
+                                     <p className="text-gray-600 mt-1">
+                                        {testDriveInfo.dealership?.phone || "Not Available"}
+                                    </p>
+                                     <p className="text-gray-600 mt-1">
+                                        {testDriveInfo.dealership?.email || "Not Available"}
+                                    </p>
+                                </div>
+
+                            </div>
+                            <div className="md:w-1/2 lg:w-1/3">
+                                <h4 className="font-medium mb-2">Working Hours</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </>
     )
