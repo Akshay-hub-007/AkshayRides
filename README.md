@@ -89,18 +89,13 @@ Then, open [http://localhost:3000](http://localhost:3000) in your browser.
 
 Deployed on [Vercel](https://vercel.com/) — optimized for seamless Next.js integration.
 
----
-
-## 🧾 License
-
-This project is licensed under the **MIT License** — feel free to use, modify, and distribute.
 
 ---
 
 ## 👨‍💻 Author
 
 Created with ❤️ by **Akshay Kalangi**
-📫 [LinkedIn](https://www.linkedin.com) | [Email](mailto:your-email@example.com)
+📫 [LinkedIn](https://www.linkedin.com) | [Email](mailto:akshaykalangi9@gmail.com)
 
 ```
 
