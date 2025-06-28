@@ -119,26 +119,25 @@ model UserSavedCar {
   @@index([userId])
   @@index([carId])
 }
-
 model TestDriveBooking {
-  id           String          @id @default(uuid())
-  carId        String
-  car          Car             @relation(fields: [carId], references: [id])
-  userId       String
-  user         User            @relation(fields: [userId], references: [id])
-  bookingDate  DateTime        @db.Date
-  startTime    String
-  status       BookingStatus   @default(PENDING)
-  notes        String?
-  createdAt    DateTime
-  updatedAt    DateTime
+  id            String        @id @default(uuid())
+  carId         String
+  car           Car           @relation(fields: [carId], references: [id])
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  bookingDate   DateTime      @db.Date
+  startTime     String        // Format: "HH:MM" (24-hour)
+  endTime       String        // Format: "HH:MM" (24-hour)
+  status        BookingStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([carId])
   @@index([userId])
   @@index([bookingDate])
   @@index([status])
 }
-
 enum BookingStatus {
   PENDING
   CONFIRMED

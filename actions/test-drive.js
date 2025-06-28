@@ -12,6 +12,7 @@ export async function bookTestDrive({
     notes
 }) {
     try {
+        console.log(carId,bookingDate,startTime,endTime,notes)
         const { userId } = await auth()
 
         if (!userId) throw new Error("You must be logged in to booka  a test drive")
@@ -52,7 +53,7 @@ export async function bookTestDrive({
                 startTime,
                 endTime,
                 notes: notes || "",
-                status: "PENDING"
+                status: "PENDING",
             }
         })
 
@@ -64,7 +65,7 @@ export async function bookTestDrive({
             data: booking
         }
     } catch (error) {
-        console.error("Error booking in testDrive")
+        console.error("Error booking in testDrive",error)
 
         return {
             success: false,
