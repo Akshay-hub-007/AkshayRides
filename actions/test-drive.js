@@ -1,5 +1,6 @@
 "use server"
 
+import { serializeCarData } from "@/lib/helper"
 import { db } from "@/lib/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
@@ -86,7 +87,7 @@ export async function getUserTestDrive() {
         })
 
         if (!user) throw new Error("User not found")
-        const booking = await db.testDriveBooking.findMany({
+        const bookings = await db.testDriveBooking.findMany({
             where: { userId: user.id },
             include: {
                 car: true
