@@ -22,7 +22,7 @@ const ReservationsPage = async() => {
 
     return (
         <div className='container mx-auto px-4 py-12'>
-            {/* <h1 className='text-6xl  mb-6 gradient-title'>Your Reservations</h1> */}
+            <h1 className='text-6xl  mb-6 gradient-title'>Your Reservations</h1>
             <ReservationsList    initialData={reservations} />
         </div>
     )
