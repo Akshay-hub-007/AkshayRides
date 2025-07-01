@@ -1,3 +1,4 @@
+import { chatbot } from '@/actions/chatbot'
 import { getFeaturedCars } from '@/actions/home'
 import CarCard from '@/components/CarCard'
 import HomeSearch from '@/components/home-search'
@@ -11,7 +12,7 @@ import Link from 'next/link'
 import React from 'react'
 
 async function page() {
-
+   chatbot()
   const featuredCars=await getFeaturedCars()
   return (
     <div className='flex flex-col pt-20'>
