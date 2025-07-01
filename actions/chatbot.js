@@ -17,7 +17,7 @@ export async function chatbot() {
 
         const datasource = new DataSource({
             type: "postgres",
-            url: process.env.LANGCHAIN_URL,
+            url: "postgresql://postgres.pirvptrbtslylxkjuvoa:!kshay2006M@r@aws-0-ap-south-1.pooler.supabase.com:5432/postgres",
             ssl: { rejectUnauthorized: false },
         });
 
@@ -31,13 +31,13 @@ export async function chatbot() {
 
         const tools = toolkit.getTools();
 
-        // console.log(
-        //     tools.map((tool) => ({
-        //         name: tool.name,
-        //         description: tool.description,
-        //     }))
-        // );
- const exampleQuery = "can you give the information about the admins";
+        console.log(
+            tools.map((tool) => ({
+                name: tool.name,
+                description: tool.description,
+            }))
+        );
+ const exampleQuery = "can you give the information about the admins in user table";
 
         const agentExecutor = createReactAgent({ llm, tools });
 
