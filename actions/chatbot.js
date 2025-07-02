@@ -37,8 +37,41 @@ export async function chatbot() {
                 description: tool.description,
             }))
         );
+        const userQuery = "which cars are available for testdrive?"
         // Improved prompt: Ask for all users with the admin role, and show their names and emails if available
-        const exampleQuery = `how many car available car db`;
+        const exampleQuery = `
+You are an intelligent AI assistant for **AkshayCarVerse**, a next-gen AI-powered car marketplace.
+
+You are connected to a PostgreSQL database with the following key tables:
+
+- **Car**: Stores details about cars (id, make, model, year, price, fuelType, status, featured, etc.)
+- **User**: Stores user profiles (id, email, name, phone, role)
+- **DealerShip**: Information about dealers (id, name, address, phone, email)
+- **UserSavedCar**: Mapping of saved cars for users (userId, carId)
+- **TestDriveBooking**: Test drive bookings by users (carId, userId, bookingDate, status, startTime, endTime)
+- **WorkingHour**: Working hours for each dealership (dealerShipId, dayOfWeek, openTime, closeTime, isOpen)
+- **_prisma_migrations**: Internal table for schema migrations (ignore this in queries)
+
+Your task:
+- Understand user queries related to cars, bookings, users, or dealers.
+- Identify the correct tables and fields.
+- Generate the appropriate SQL using available tools.
+- Provide a clear and helpful response in natural language.
+
+Examples you should handle:
+- “How many cars are currently featured and available?”
+- “List all test drives booked by a user with email ‘john@example.com’.”
+- “Show dealerships that are open on Sundays.”
+- “List all cars saved by a specific user.”
+- “What is the average price of diesel cars?”
+
+Be smart, and avoid referencing irrelevant tables like _prisma_migrations.
+
+NOTE:Formt the final reponse in a clear and good way and should be more informative.
+
+**User query:**  
+"${userQuery}"
+`;
 
         const agentExecutor = createReactAgent({ llm, tools });
 
@@ -50,9 +83,9 @@ export async function chatbot() {
         for await (const event of events) {
             const lastMsg = event.messages[event.messages.length - 1];
             if (lastMsg.tool_calls?.length) {
-                console.dir(lastMsg.tool_calls, { depth: null });
+                // console.dir(lastMsg.tool_calls, { depth: null });
             } else if (lastMsg.content) {
-                console.log(lastMsg.content);
+                console.log("final result:",lastMsg.content);
             }
         }
 
