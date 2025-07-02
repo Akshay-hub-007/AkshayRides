@@ -15,6 +15,7 @@
     "@clerk/nextjs": "^6.12.9",
     "@google/generative-ai": "^0.24.0",
     "@hookform/resolvers": "^5.0.1",
+    "@langchain/community": "^0.3.47",
     "@langchain/core": "^0.3.61",
     "@langchain/google-genai": "^0.2.14",
     "@langchain/langgraph": "^0.3.6",

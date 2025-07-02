@@ -37,7 +37,8 @@ export async function chatbot() {
                 description: tool.description,
             }))
         );
- const exampleQuery = "can you give the information about the admins in user table";
+        // Improved prompt: Ask for all users with the admin role, and show their names and emails if available
+        const exampleQuery = `how many car available car db`;
 
         const agentExecutor = createReactAgent({ llm, tools });
 
