@@ -96,6 +96,3 @@ NOTE:Formt the final reponse in a clear and good way and should be more informat
         console.error(error);
     }
 }
-        const userQuery = ""
-
-console.log(chatbot("how many users present in db"))
