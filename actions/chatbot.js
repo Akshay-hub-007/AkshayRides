@@ -6,9 +6,10 @@ import { SqlToolkit } from "langchain/agents/toolkits/sql";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 
-export async function chatbot() {
+export async function chatbot(query) {
     try {
-        console.log("hi");
+
+        console.log(query);
 
         const llm = new ChatGoogleGenerativeAI({
             model: "gemini-2.0-flash",
@@ -31,13 +32,12 @@ export async function chatbot() {
 
         const tools = toolkit.getTools();
 
-        console.log(
-            tools.map((tool) => ({
-                name: tool.name,
-                description: tool.description,
-            }))
-        );
-        const userQuery = "which cars are available for testdrive?"
+        // console.log(
+        //     tools.map((tool) => ({
+        //         name: tool.name,
+        //         description: tool.description,
+        //     }))
+        // );
         // Improved prompt: Ask for all users with the admin role, and show their names and emails if available
         const exampleQuery = `
 You are an intelligent AI assistant for **AkshayCarVerse**, a next-gen AI-powered car marketplace.
@@ -70,7 +70,7 @@ Be smart, and avoid referencing irrelevant tables like _prisma_migrations.
 NOTE:Formt the final reponse in a clear and good way and should be more informative.
 
 **User query:**  
-"${userQuery}"
+"${query}"
 `;
 
         const agentExecutor = createReactAgent({ llm, tools });
@@ -79,19 +79,23 @@ NOTE:Formt the final reponse in a clear and good way and should be more informat
             { messages: [["user", exampleQuery]] },
             { streamMode: "values" }
         );
-
+       let message;
         for await (const event of events) {
             const lastMsg = event.messages[event.messages.length - 1];
             if (lastMsg.tool_calls?.length) {
-                // console.dir(lastMsg.tool_calls, { depth: null });
+                console.dir(lastMsg.tool_calls, { depth: null });
             } else if (lastMsg.content) {
-                console.log("final result:",lastMsg.content);
+                // console.log("final result:",lastMsg.content);
+                message=lastMsg.content
             }
         }
 
+        // console.log("message:",message)
+      return message
     } catch (error) {
         console.error(error);
     }
 }
+        const userQuery = ""
 
-chatbot();
+console.log(chatbot("how many users present in db"))

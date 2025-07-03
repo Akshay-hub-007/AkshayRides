@@ -1,6 +1,7 @@
 import { chatbot } from '@/actions/chatbot'
 import { getFeaturedCars } from '@/actions/home'
 import CarCard from '@/components/CarCard'
+import ChatbotWidget from '@/components/Chatbot'
 import HomeSearch from '@/components/home-search'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
@@ -12,8 +13,7 @@ import Link from 'next/link'
 import React from 'react'
 
 async function page() {
-   chatbot()
-  const featuredCars=await getFeaturedCars()
+  const featuredCars = await getFeaturedCars()
   return (
     <div className='flex flex-col pt-20'>
       <section className='relative py-16 md:py-28 dotted-background'>
@@ -164,18 +164,18 @@ async function page() {
           <h2 className='text-2xl font-bold text-center mb-8'>
             Frequently Askes Questions
           </h2>
-         {
-          faqItems.map((faq,index)=>{
-          return   <Accordion type="single" collapsible className="w-full" key={index}>
-            <AccordionItem value={`item1${index}`}>
-              <AccordionTrigger>{faq.question}</AccordionTrigger>
-              <AccordionContent>
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          })
-         }
+          {
+            faqItems.map((faq, index) => {
+              return <Accordion type="single" collapsible className="w-full" key={index}>
+                <AccordionItem value={`item1${index}`}>
+                  <AccordionTrigger>{faq.question}</AccordionTrigger>
+                  <AccordionContent>
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            })
+          }
         </div>
       </section>
 
@@ -186,18 +186,19 @@ async function page() {
             Join Thousand of statisfied customers who found their perfect vehocle through our platform
           </p>
           <div className='flex flex-col sm:flex-row justify-center gap-4'>
-          <Button size="lg" variant={"secondary"} asChild>
+            <Button size="lg" variant={"secondary"} asChild>
               <Link href="/cars">View All Cars</Link>
             </Button>
-          <SignedOut>
-          <Button size="lg" variant={"secondary"} asChild>
-              <Link href="/sign-up">Sign Up Now</Link>
-            </Button>
-          </SignedOut>
+            <SignedOut>
+              <Button size="lg" variant={"secondary"} asChild>
+                <Link href="/sign-up">Sign Up Now</Link>
+              </Button>
+            </SignedOut>
 
           </div>
         </div>
       </section>
+
     </div>
   )
 }
