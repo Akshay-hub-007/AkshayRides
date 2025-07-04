@@ -1,5 +1,6 @@
 'use client'
 import { chatbot } from '@/actions/chatbot'
+import { Loader } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 
@@ -130,7 +131,7 @@ function ChatbotWidget() {
               disabled={loading || !query.trim()}
               className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-lg font-semibold text-sm shadow disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? <span className="animate-spin">⏳</span> : 'Send'}
+              {loading ? <span className="animate-spin"><Loader></Loader></span> : 'Send'}
             </button>
           </div>
         </div>
