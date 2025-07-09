@@ -1,6 +1,7 @@
 'use client'
 import { chatbot } from '@/actions/chatbot'
 import { Loader } from 'lucide-react'
+import React from 'react'
 import { useState, useRef, useEffect } from 'react'
 
 
@@ -75,10 +76,12 @@ function ChatbotWidget() {
                 >
                   <span
                     className={
-                      msg.from === 'user'
-                        ? 'bg-blue-600 text-white rounded-lg px-3 py-2 max-w-[80%] shadow font-medium'
-                        : 'bg-white/80 text-gray-800 rounded-lg px-3 py-2 max-w-[80%] shadow'
+                      (msg.from === 'user'
+                        ? 'bg-blue-600 text-white font-medium'
+                        : 'bg-white/80 text-gray-800') +
+                      ' rounded-lg px-3 py-2 max-w-full break-words shadow whitespace-pre-line'
                     }
+                    style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', display: 'inline-block' }}
                   >
                     {msg.text === '___LOADING___' ? (
                       <span className="inline-flex items-center gap-1">
@@ -86,8 +89,11 @@ function ChatbotWidget() {
                         <span className="dot-flashing"></span>
                         <span className="dot-flashing"></span>
                       </span>
-                    ) : msg.text}
+                    ) : (
+                      <RenderMessageText text={msg.text} />
+                    )}
                   </span>
+
                 </div>
               ))}
               <div ref={messagesEndRef} />
@@ -147,5 +153,32 @@ function ChatbotWidget() {
     </div>
   )
 }
-
+// Render message text with clickable links
+function RenderMessageText({ text }) {
+  // Regex to match URLs
+  const urlRegex = /(https?:\/\/[\w\-._~:/?#[\]@!$&'()*+,;=%]+)|(www\.[\w\-._~:/?#[\]@!$&'()*+,;=%]+)/gi;
+  const parts = text.split(urlRegex);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (!part) return null;
+        if (urlRegex.test(part)) {
+          const url = part.startsWith('http') ? part : `https://${part}`;
+          return (
+            <a
+              key={i}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline break-all hover:text-blue-900"
+            >
+              {part}
+            </a>
+          );
+        }
+        return <React.Fragment key={i}>{part}</React.Fragment>;
+      })}
+    </>
+  );
+}
 export default ChatbotWidget
